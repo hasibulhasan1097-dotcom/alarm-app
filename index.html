@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Smart Alarm</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080808;display:flex;justify-content:center;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:20px}
+.phone{width:360px;background:#0e0e10;border-radius:40px;border:1px solid #1e1e22;overflow:hidden;position:relative}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:16px 24px 8px;font-size:12px;color:#444}
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 24px 16px}
+.hdr-title{font-size:22px;font-weight:600;color:#f0ede8;letter-spacing:-0.5px}
+.hdr-add{width:36px;height:36px;border-radius:50%;background:#1a1810;border:1px solid #3a3220;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hdr-add svg{width:16px;height:16px;stroke:#c9a96e;fill:none;stroke-width:2.5;stroke-linecap:round}
+.clock-wrap{margin:0 18px 16px;background:#111;border-radius:24px;border:1px solid #1e1e22;padding:24px 20px;text-align:center}
+.gold-bar{width:36px;height:2px;background:#c9a96e;border-radius:2px;margin:0 auto 16px}
+.clock-row{display:flex;align-items:flex-start;justify-content:center;gap:4px}
+.clock-num{font-size:60px;font-weight:300;color:#f0ede8;letter-spacing:-3px;line-height:1}
+.clock-ampm{font-size:16px;font-weight:500;color:#c9a96e;padding-top:10px}
+.clock-date{font-size:13px;color:#555;margin-top:10px}
+.clock-secs{font-size:12px;color:#333;margin-top:4px}
+.next-banner{margin:0 18px 18px;background:#13110e;border-radius:14px;border:1px solid #2e2618;padding:13px 16px;display:flex;align-items:center;gap:12px}
+.next-icon{width:36px;height:36px;border-radius:11px;background:#1e1a10;border:1px solid #c9a96e40;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.next-icon svg{width:18px;height:18px;stroke:#c9a96e;fill:none;stroke-width:1.8;stroke-linecap:round}
+.next-label{font-size:11px;color:#7a5e28;letter-spacing:0.6px;text-transform:uppercase;font-weight:600}
+.next-val{font-size:14px;color:#d4b87a;font-weight:500;margin-top:3px}
+.sec{padding:0 24px 10px;font-size:11px;color:#3a3a3a;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.alist{padding:0 18px;display:flex;flex-direction:column;gap:10px}
+.acard{background:#111;border:1px solid #1e1e22;border-radius:20px;padding:16px;display:flex;align-items:center;gap:14px}
+.acard.on{background:#121008;border-color:#2e2618}
+.ainfo{flex:1}
+.atime-row{display:flex;align-items:baseline;gap:5px}
+.atime{font-size:28px;font-weight:300;letter-spacing:-1px;line-height:1.1}
+.acard.on .atime{color:#e8d5a3}
+.acard:not(.on) .atime{color:#2e2e2e}
+.aperiod{font-size:13px;font-weight:500}
+.acard.on .aperiod{color:#886a30}
+.acard:not(.on) .aperiod{color:#252525}
+.albl{font-size:13px;margin-top:3px}
+.acard.on .albl{color:#7a5e28}
+.acard:not(.on) .albl{color:#333}
+.atags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.tag.dim{border:1px solid #1e1e22;color:#333;background:#141414}
+.tag.gold{border:1px solid #2e2618;color:#7a5e28;background:#13110e}
+.tag.cam{border:1px solid #2e2618;color:#c9a96e;background:#1a1508}
+.tog{width:46px;height:28px;border-radius:14px;border:none;cursor:pointer;position:relative;flex-shrink:0;transition:background 0.25s}
+.tog.on{background:#c9a96e}
+.tog.off{background:#1e1e22}
+.tog::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#0e0e10;top:3px;transition:left 0.25s}
+.tog.on::after{left:21px}
+.tog.off::after{left:3px}
+.divider{margin:18px 18px 0;height:1px;background:#161616}
+.bnav{display:flex;justify-content:space-around;padding:14px 18px 20px}
+.ni{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.ni svg{width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ni.act svg{stroke:#c9a96e}
+.ni:not(.act) svg{stroke:#2e2e2e}
+.ni span{font-size:11px;font-weight:500}
+.ni.act span{color:#c9a96e}
+.ni:not(.act) span{color:#2e2e2e}
+
+/* ADD ALARM MODAL */
+.add-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);border-radius:40px;align-items:flex-end;justify-content:center;z-index:30}
+.add-modal.show{display:flex}
+.add-sheet{background:#111;border-radius:24px 24px 0 0;border:1px solid #2a2a2a;padding:24px 20px 30px;width:100%}
+.add-sheet h3{font-size:17px;font-weight:600;color:#f0ede8;margin-bottom:20px;text-align:center}
+.form-row{margin-bottom:14px}
+.form-label{font-size:12px;color:#7a5e28;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px}
+.form-input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:11px 14px;color:#f0ede8;font-size:15px;outline:none}
+.form-input:focus{border-color:#c9a96e40}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sound-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.sound-btn{padding:10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;color:#888;font-size:12px;cursor:pointer;text-align:center;transition:all 0.2s}
+.sound-btn.selected{background:#1a1508;border-color:#c9a96e;color:#c9a96e}
+.sound-btn:hover{background:#222}
+.pushup-row{display:flex;align-items:center;gap:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:10px 14px}
+.pushup-row span{font-size:13px;color:#888;flex:1}
+.pushup-stepper{display:flex;align-items:center;gap:10px}
+.step-btn{width:28px;height:28px;border-radius:50%;background:#2a2a2a;border:none;color:#c9a96e;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.step-val{font-size:16px;font-weight:600;color:#e8d5a3;min-width:28px;text-align:center}
+.add-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.btn-cancel{padding:13px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;color:#666;font-size:14px;cursor:pointer}
+.btn-save{padding:13px;background:#c9a96e;border:none;border-radius:14px;color:#0e0e10;font-size:14px;font-weight:600;cursor:pointer}
+
+/* PUSHUP MODAL */
+.modal-wrap{display:none;position:absolute;inset:0;background:#0a0a0a;border-radius:40px;flex-direction:column;z-index:20;overflow:hidden}
+.modal-wrap.show{display:flex}
+.modal-top{padding:20px 20px 12px;text-align:center;flex-shrink:0}
+.modal-ring-label{font-size:11px;color:#c9a96e;letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.modal-alarm-time{font-size:36px;font-weight:300;color:#f0ede8;letter-spacing:-2px}
+.modal-alarm-name{font-size:13px;color:#7a5e28;margin-top:4px}
+.cam-box{position:relative;margin:0 16px;border-radius:20px;overflow:hidden;background:#0a0a0a;border:1px solid #1e1e22;flex-shrink:0}
+#cam-vid{width:100%;display:block;transform:scaleX(-1)}
+.cam-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:14px}
+.cam-status{background:rgba(0,0,0,0.65);border-radius:10px;padding:6px 12px;font-size:12px;color:#c9a96e;text-align:center;font-weight:500}
+.pushup-counter-wrap{display:flex;justify-content:center}
+.pushup-counter{width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,0.75);border:2px solid #c9a96e;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pushup-num{font-size:26px;font-weight:500;color:#e8d5a3;line-height:1}
+.pushup-lbl{font-size:10px;color:#886a30;margin-top:2px}
+.modal-bottom{padding:14px 18px 18px;flex-shrink:0}
+.progress-wrap{margin-bottom:14px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#555;margin-bottom:8px}
+.progress-label span:last-child{color:#c9a96e;font-weight:500}
+.progress-bar-bg{height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:#c9a96e;border-radius:3px;transition:width 0.4s ease;width:0%}
+.hint-text{font-size:12px;color:#444;text-align:center;margin-bottom:12px;line-height:1.5}
+.snooze-btn{width:100%;padding:13px;background:#141414;border:1px solid #222;border-radius:14px;color:#555;font-size:14px;cursor:pointer}
+.done-overlay{display:none;position:absolute;inset:0;background:rgba(10,10,10,0.95);border-radius:40px;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:30}
+.done-overlay.show{display:flex}
+.done-icon{width:80px;height:80px;border-radius:50%;background:#1a1508;border:2px solid #c9a96e;display:flex;align-items:center;justify-content:center}
+.done-icon svg{width:36px;height:36px;stroke:#c9a96e;fill:none;stroke-width:2;stroke-linecap:round}
+.done-title{font-size:22px;font-weight:500;color:#e8d5a3}
+.done-sub{font-size:14px;color:#7a5e28;text-align:center;padding:0 30px}
+.done-dismiss{padding:14px 48px;background:#c9a96e;border:none;border-radius:14px;color:#0e0e10;font-size:15px;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="sb">
+    <span id="sb-t">9:41 AM</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3"/></svg>
+    </div>
+  </div>
+  <div class="hdr">
+    <div class="hdr-title">Alarms</div>
+    <div class="hdr-add" onclick="openAddModal()">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+  </div>
+  <div class="clock-wrap">
+    <div class="gold-bar"></div>
+    <div class="clock-row">
+      <div class="clock-num" id="clk">9:41</div>
+      <div class="clock-ampm" id="clk-ap">AM</div>
+    </div>
+    <div class="clock-date" id="clk-date">Monday, June 30</div>
+    <div class="clock-secs" id="clk-sec">00s</div>
+  </div>
+  <div class="next-banner">
+    <div class="next-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6M22 6l-3-3"/></svg>
+    </div>
+    <div>
+      <div class="next-label">Next alarm</div>
+      <div class="next-val" id="next-val">Calculating...</div>
+    </div>
+  </div>
+  <div class="sec">Today</div>
+  <div class="alist" id="alist"></div>
+  <div class="divider"></div>
+  <div class="bnav">
+    <div class="ni act">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6M22 6l-3-3"/></svg>
+      <span>Alarms</span>
+    </div>
+    <div class="ni">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Timer</span>
+    </div>
+    <div class="ni">
+      <svg viewBox="0 0 24 24"><path d="M5 22V2l7 4 7-4v20l-7-4-7 4z"/></svg>
+      <span>Stopwatch</span>
+    </div>
+    <div class="ni">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+
+  <!-- ADD ALARM SHEET -->
+  <div class="add-modal" id="add-modal">
+    <div class="add-sheet">
+      <h3>New Alarm</h3>
+      <div class="form-row-2">
+        <div>
+          <div class="form-label">Time</div>
+          <input class="form-input" type="time" id="f-time" value="07:00"/>
+        </div>
+        <div>
+          <div class="form-label">Label</div>
+          <input class="form-input" type="text" id="f-label" placeholder="e.g. Wake up" maxlength="20"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">💪 Pushup goal</div>
+        <div class="pushup-row">
+          <span>Complete before dismissing</span>
+          <div class="pushup-stepper">
+            <button class="step-btn" onclick="stepPushup(-5)">−</button>
+            <div class="step-val" id="f-pushup">20</div>
+            <button class="step-btn" onclick="stepPushup(5)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">🔔 Alarm sound</div>
+        <div class="sound-grid" id="sound-grid">
+          <div class="sound-btn selected" data-sound="beep" onclick="selectSound(this)">📟 Classic Beep</div>
+          <div class="sound-btn" data-sound="digital" onclick="selectSound(this)">🔢 Digital</div>
+          <div class="sound-btn" data-sound="gentle" onclick="selectSound(this)">🎵 Gentle Rise</div>
+          <div class="sound-btn" data-sound="urgent" onclick="selectSound(this)">🚨 Urgent</div>
+        </div>
+      </div>
+      <div class="add-actions">
+        <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+        <button class="btn-save" onclick="saveAlarm()">Save Alarm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUSHUP MODAL -->
+  <div class="modal-wrap" id="modal">
+    <div class="modal-top">
+      <div class="modal-ring-label">⏰ Alarm ringing</div>
+      <div class="modal-alarm-time" id="m-time">6:30 AM</div>
+      <div class="modal-alarm-name" id="m-name">Morning routine</div>
+    </div>
+    <div class="cam-box">
+      <video id="cam-vid" autoplay playsinline muted></video>
+      <div class="cam-overlay">
+        <div class="cam-status" id="cam-status">Starting camera...</div>
+        <div class="pushup-counter-wrap">
+          <div class="pushup-counter" id="manual-counter">
+            <div class="pushup-num" id="p-count">0</div>
+            <div class="pushup-lbl" id="p-goal-lbl">/ 20</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-bottom">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Pushup progress</span>
+          <span id="p-pct">0 / 20</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="p-bar"></div></div>
+      </div>
+      <div class="hint-text" id="p-hint">Get into pushup position.<br>Go DOWN to start counting.</div>
+      <button class="snooze-btn" onclick="snoozeAlarm()">Snooze 5 min</button>
+    </div>
+    <div class="done-overlay" id="done-overlay">
+      <div class="done-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="done-title" id="done-title">20 Pushups done! 💪</div>
+      <div class="done-sub">Amazing work! Alarm dismissed.<br>Have a productive day!</div>
+      <button class="done-dismiss" onclick="dismissAlarm()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js"></script>
+<script>
+// ── State ──────────────────────────────────────────────
+const alarms=[
+  {id:1,h:6,m:30,label:'Morning routine',repeat:'Daily',pushGoal:20,sound:'beep',on:true},
+  {id:2,h:8,m:0,label:'Work standup',repeat:'Mon–Fri',pushGoal:10,sound:'gentle',on:true},
+  {id:3,h:22,m:30,label:'Sleep reminder',repeat:'Daily',pushGoal:15,sound:'digital',on:false},
+];
+let nextId=4,ringId=null,pushCount=0,pushGoal=20,poseState='up',stream=null,poseReady=false,mpCamera=null,audioCtx=null,alarmInterval=null,selectedSound='beep',newPushGoal=20;
+
+// ── Audio ──────────────────────────────────────────────
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+
+function playSound(type){
+  const ctx=getCtx();
+  const sounds={
+    beep:()=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='square';o.frequency.value=880;
+      g.gain.setValueAtTime(0.3,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.15);
+      o.start();o.stop(ctx.currentTime+0.15);
+    },
+    digital:()=>{
+      [880,1100,880,1100].forEach((f,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.type='sawtooth';o.frequency.value=f;
+        const t=ctx.currentTime+i*0.12;
+        g.gain.setValueAtTime(0.2,t);
+        g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+        o.start(t);o.stop(t+0.1);
+      });
+    },
+    gentle:()=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';o.frequency.setValueAtTime(440,ctx.currentTime);
+      o.frequency.linearRampToValueAtTime(660,ctx.currentTime+0.4);
+      g.gain.setValueAtTime(0,ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.25,ctx.currentTime+0.2);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.5);
+      o.start();o.stop(ctx.currentTime+0.5);
+    },
+    urgent:()=>{
+      [1400,700,1400,700,1400].forEach((f,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.type='square';o.frequency.value=f;
+        const t=ctx.currentTime+i*0.1;
+        g.gain.setValueAtTime(0.35,t);
+        g.gain.exponentialRampToValueAtTime(0.001,t+0.08);
+        o.start(t);o.stop(t+0.08);
+      });
+    }
+  };
+  (sounds[type]||sounds.beep)();
+}
+
+function startAlarmSound(type){
+  playSound(type);
+  alarmInterval=setInterval(()=>playSound(type),1200);
+}
+function stopAlarmSound(){clearInterval(alarmInterval);alarmInterval=null;}
+
+// ── Format ─────────────────────────────────────────────
+function fmt(h,m){const ap=h>=12?'PM':'AM';const hh=h%12||12;return hh+':'+String(m).padStart(2,'0')+' '+ap;}
+
+// ── Render ─────────────────────────────────────────────
+function renderAlarms(){
+  const el=document.getElementById('alist');el.innerHTML='';
+  alarms.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='acard'+(a.on?' on':'');
+    const h12=a.h%12||12,ap=a.h>=12?'PM':'AM';
+    const soundEmoji={beep:'📟',digital:'🔢',gentle:'🎵',urgent:'🚨'}[a.sound]||'🔔';
+    d.innerHTML=`<div class="ainfo">
+      <div class="atime-row"><div class="atime">${h12}:${String(a.m).padStart(2,'0')}</div><div class="aperiod">${ap}</div></div>
+      <div class="albl">${a.label}</div>
+      <div class="atags">
+        <span class="tag ${a.on?'gold':'dim'}">${a.repeat}</span>
+        <span class="tag ${a.on?'cam':'dim'}">💪 ${a.pushGoal} pushups</span>
+        <span class="tag ${a.on?'gold':'dim'}">${soundEmoji} ${a.sound}</span>
+      </div>
+    </div>
+    <button class="tog ${a.on?'on':'off'}" onclick="toggleAlarm(${a.id},event)"></button>`;
+    el.appendChild(d);
+  });
+  updateNext();
+}
+
+function toggleAlarm(id,e){e.stopPropagation();const a=alarms.find(x=>x.id===id);a.on=!a.on;renderAlarms();}
+
+function updateNext(){
+  const now=new Date();let best=null,bestMin=Infinity;
+  alarms.forEach(a=>{
+    if(!a.on)return;
+    let d=new Date(now);d.setHours(a.h,a.m,0,0);
+    if(d<=now)d.setDate(d.getDate()+1);
+    const diff=d-now;
+    if(diff<bestMin){bestMin=diff;best=a;}
+  });
+  if(!best){document.getElementById('next-val').textContent='No active alarms';return;}
+  const totalMin=Math.round(bestMin/60000);
+  const hrs=Math.floor(totalMin/60),mins=totalMin%60;
+  document.getElementById('next-val').textContent=fmt(best.h,best.m)+' — in '+hrs+'h '+mins+'m';
+}
+
+// ── Clock ──────────────────────────────────────────────
+function tick(){
+  const n=new Date();
+  let h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
+  const ap=h>=12?'PM':'AM',h12=h%12||12;
+  const ts=h12+':'+String(m).padStart(2,'0');
+  document.getElementById('clk').textContent=ts;
+  document.getElementById('clk-ap').textContent=ap;
+  document.getElementById('sb-t').textContent=ts+' '+ap;
+  document.getElementById('clk-sec').textContent=String(s).padStart(2,'0')+'s';
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('clk-date').textContent=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate();
+  if(s===0)updateNext();
+  alarms.forEach(a=>{if(a.on&&a.h===h&&a.m===m&&s===0&&ringId!==a.id)ringAlarm(a);});
+}
+
+// ── Alarm ring ─────────────────────────────────────────
+function ringAlarm(a){
+  ringId=a.id;pushCount=0;pushGoal=a.pushGoal;poseState='up';
+  document.getElementById('m-time').textContent=fmt(a.h,a.m);
+  document.getElementById('m-name').textContent=a.label;
+  document.getElementById('p-count').textContent='0';
+  document.getElementById('p-goal-lbl').textContent='/ '+pushGoal;
+  document.getElementById('p-bar').style.width='0%';
+  document.getElementById('p-pct').textContent='0 / '+pushGoal;
+  document.getElementById('p-hint').textContent='Get into pushup position.\nGo DOWN to start counting.';
+  document.getElementById('done-overlay').classList.remove('show');
+  document.getElementById('modal').classList.add('show');
+  startAlarmSound(a.sound);
+  startPoseDetection();
+}
+
+// ── Pose detection ─────────────────────────────────────
+function startPoseDetection(){
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:360,height:240}})
+    .then(s=>{stream=s;const v=document.getElementById('cam-vid');v.srcObject=s;initPose(v);})
+    .catch(()=>{document.getElementById('cam-status').textContent='Camera unavailable — tap counter';enableManualCount();});
+}
+
+function enableManualCount(){
+  document.getElementById('p-hint').innerHTML='Camera not available.<br>Tap the counter to count manually.';
+  const ctr=document.getElementById('manual-counter');
+  ctr.onclick=()=>countPushup();ctr.style.cursor='pointer';
+}
+
+function initPose(vid){
+  try{
+    const pose=new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${f}`});
+    pose.setOptions({modelComplexity:0,smoothLandmarks:true,minDetectionConfidence:0.5,minTrackingConfidence:0.5});
+    pose.onResults(onPoseResults);poseReady=true;
+    mpCamera=new Camera(vid,{onFrame:async()=>{if(poseReady)await pose.send({image:vid});},width:360,height:240});
+    mpCamera.start();
+    document.getElementById('cam-status').textContent='AI detecting pushups...';
+  }catch(e){document.getElementById('cam-status').textContent='Pose AI unavailable — tap counter';enableManualCount();}
+}
+
+function angle(a,b,c){
+  const r=Math.atan2(c.y-b.y,c.x-b.x)-Math.atan2(a.y-b.y,a.x-b.x);
+  let deg=Math.abs(r*180/Math.PI);if(deg>180)deg=360-deg;return deg;
+}
+
+function onPoseResults(res){
+  if(!res.poseLandmarks)return;
+  const lm=res.poseLandmarks;
+  const lA=angle(lm[11],lm[13],lm[15]),rA=angle(lm[12],lm[14],lm[16]);
+  const avg=(lA+rA)/2;
+  if(avg<80&&poseState==='up'){poseState='down';document.getElementById('cam-status').textContent='Down ✓ — now push UP!';}
+  else if(avg>150&&poseState==='down'){poseState='up';countPushup();}
+}
+
+function countPushup(){
+  pushCount=Math.min(pushCount+1,pushGoal);
+  document.getElementById('p-count').textContent=pushCount;
+  const pct=Math.round((pushCount/pushGoal)*100);
+  document.getElementById('p-bar').style.width=pct+'%';
+  document.getElementById('p-pct').textContent=pushCount+' / '+pushGoal;
+  document.getElementById('cam-status').textContent=pushCount+' / '+pushGoal+' done!';
+  playSound('beep');
+  if(pushCount<pushGoal){document.getElementById('p-hint').textContent=(pushGoal-pushCount)+' more to go. Keep pushing!';}
+  else{
+    stopAlarmSound();stopStream();
+    document.getElementById('done-title').textContent=pushGoal+' Pushups done! 💪';
+    setTimeout(()=>document.getElementById('done-overlay').classList.add('show'),400);
+  }
+}
+
+function stopStream(){
+  if(mpCamera){try{mpCamera.stop();}catch(e){}}
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  poseReady=false;
+}
+
+function dismissAlarm(){stopStream();stopAlarmSound();document.getElementById('modal').classList.remove('show');document.getElementById('done-overlay').classList.remove('show');ringId=null;}
+function snoozeAlarm(){
+  stopStream();stopAlarmSound();
+  const a=alarms.find(x=>x.id===ringId);
+  if(a){const d=new Date();d.setMinutes(d.getMinutes()+5);a.h=d.getHours();a.m=d.getMinutes();}
+  document.getElementById('modal').classList.remove('show');ringId=null;updateNext();
+}
+
+// ── Add alarm modal ────────────────────────────────────
+function openAddModal(){
+  newPushGoal=20;selectedSound='beep';
+  document.getElementById('f-pushup').textContent='20';
+  document.getElementById('f-time').value='07:00';
+  document.getElementById('f-label').value='';
+  document.querySelectorAll('.sound-btn').forEach(b=>{b.classList.remove('selected');if(b.dataset.sound==='beep')b.classList.add('selected');});
+  document.getElementById('add-modal').classList.add('show');
+}
+function closeAddModal(){document.getElementById('add-modal').classList.remove('show');}
+
+function stepPushup(n){
+  newPushGoal=Math.max(5,Math.min(100,newPushGoal+n));
+  document.getElementById('f-pushup').textContent=newPushGoal;
+}
+
+function selectSound(el){
+  document.querySelectorAll('.sound-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');selectedSound=el.dataset.sound;
+  playSound(selectedSound);
+}
+
+function saveAlarm(){
+  const t=document.getElementById('f-time').value;
+  if(!t){alert('Please set a time.');return;}
+  const[hh,mm]=t.split(':');
+  const lbl=document.getElementById('f-label').value||'My alarm';
+  alarms.push({id:nextId++,h:parseInt(hh),m:parseInt(mm),label:lbl,repeat:'Daily',pushGoal:newPushGoal,sound:selectedSound,on:true});
+  renderAlarms();closeAddModal();
+}
+
+renderAlarms();tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
