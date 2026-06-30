@@ -4,116 +4,149 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Smart Alarm</title>
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#080808;display:flex;justify-content:center;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:20px}
-.phone{width:360px;background:#0e0e10;border-radius:40px;border:1px solid #1e1e22;overflow:hidden;position:relative}
-.sb{display:flex;justify-content:space-between;align-items:center;padding:16px 24px 8px;font-size:12px;color:#444}
-.hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 24px 16px}
-.hdr-title{font-size:22px;font-weight:600;color:#f0ede8;letter-spacing:-0.5px}
-.hdr-add{width:36px;height:36px;border-radius:50%;background:#1a1810;border:1px solid #3a3220;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.hdr-add svg{width:16px;height:16px;stroke:#c9a96e;fill:none;stroke-width:2.5;stroke-linecap:round}
-.clock-wrap{margin:0 18px 16px;background:#111;border-radius:24px;border:1px solid #1e1e22;padding:24px 20px;text-align:center}
-.gold-bar{width:36px;height:2px;background:#c9a96e;border-radius:2px;margin:0 auto 16px}
+:root{
+  --bg:#080808;--phone-bg:#0e0e10;--border:#1e1e22;--card-bg:#111;--card-border:#1e1e22;
+  --card-on-bg:#121008;--card-on-border:#2e2618;--text-main:#f0ede8;--text-dim:#555;
+  --text-faint:#333;--text-vfaint:#2e2e2e;--gold:#c9a96e;--gold-dim:#7a5e28;--gold-soft:#d4b87a;
+  --gold-bright:#e8d5a3;--input-bg:#1a1a1a;--input-border:#2a2a2a;--sb-color:#444;
+  --icon-bg:#1a1810;--icon-border:#3a3220;
+}
+body.light{
+  --bg:#eee9e0;--phone-bg:#fbf9f5;--border:#e3ddd0;--card-bg:#fff;--card-border:#e8e2d4;
+  --card-on-bg:#fdf8ec;--card-on-border:#e8d9b0;--text-main:#2a2620;--text-dim:#8a8478;
+  --text-faint:#c4bcab;--text-vfaint:#d8d1c0;--gold:#a8823f;--gold-dim:#9c7a3a;--gold-soft:#8a6a30;
+  --gold-bright:#7a5e28;--input-bg:#f5f1e8;--input-border:#e3ddd0;--sb-color:#999;
+  --icon-bg:#f5edd8;--icon-border:#e3d4a8;
+}
+body{background:var(--bg);display:flex;justify-content:center;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:20px;transition:background 0.3s}
+.phone{width:360px;background:var(--phone-bg);border-radius:40px;border:1px solid var(--border);overflow:hidden;position:relative;transition:background 0.3s,border 0.3s}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:16px 24px 8px;font-size:12px;color:var(--sb-color)}
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 24px 16px;gap:8px}
+.hdr-title{font-size:22px;font-weight:600;color:var(--text-main);letter-spacing:-0.5px;flex:1}
+.hdr-btns{display:flex;gap:8px}
+.hdr-icon-btn{width:36px;height:36px;border-radius:50%;background:var(--icon-bg);border:1px solid var(--icon-border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.hdr-icon-btn svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:2.5;stroke-linecap:round}
+.clock-wrap{margin:0 18px 16px;background:var(--card-bg);border-radius:24px;border:1px solid var(--border);padding:24px 20px;text-align:center;transition:background 0.3s,border 0.3s}
+.gold-bar{width:36px;height:2px;background:var(--gold);border-radius:2px;margin:0 auto 16px}
 .clock-row{display:flex;align-items:flex-start;justify-content:center;gap:4px}
-.clock-num{font-size:60px;font-weight:300;color:#f0ede8;letter-spacing:-3px;line-height:1}
-.clock-ampm{font-size:16px;font-weight:500;color:#c9a96e;padding-top:10px}
-.clock-date{font-size:13px;color:#555;margin-top:10px}
-.clock-secs{font-size:12px;color:#333;margin-top:4px}
-.next-banner{margin:0 18px 18px;background:#13110e;border-radius:14px;border:1px solid #2e2618;padding:13px 16px;display:flex;align-items:center;gap:12px}
-.next-icon{width:36px;height:36px;border-radius:11px;background:#1e1a10;border:1px solid #c9a96e40;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.next-icon svg{width:18px;height:18px;stroke:#c9a96e;fill:none;stroke-width:1.8;stroke-linecap:round}
-.next-label{font-size:11px;color:#7a5e28;letter-spacing:0.6px;text-transform:uppercase;font-weight:600}
-.next-val{font-size:14px;color:#d4b87a;font-weight:500;margin-top:3px}
-.sec{padding:0 24px 10px;font-size:11px;color:#3a3a3a;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.clock-num{font-size:60px;font-weight:300;color:var(--text-main);letter-spacing:-3px;line-height:1}
+.clock-ampm{font-size:16px;font-weight:500;color:var(--gold);padding-top:10px}
+.clock-date{font-size:13px;color:var(--text-dim);margin-top:10px}
+.clock-secs{font-size:12px;color:var(--text-faint);margin-top:4px}
+.next-banner{margin:0 18px 18px;background:var(--card-on-bg);border-radius:14px;border:1px solid var(--card-on-border);padding:13px 16px;display:flex;align-items:center;gap:12px;transition:background 0.3s,border 0.3s}
+.next-icon{width:36px;height:36px;border-radius:11px;background:var(--icon-bg);border:1px solid var(--icon-border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.next-icon svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round}
+.next-label{font-size:11px;color:var(--gold-dim);letter-spacing:0.6px;text-transform:uppercase;font-weight:600}
+.next-val{font-size:14px;color:var(--gold-soft);font-weight:500;margin-top:3px}
+.sec{padding:0 24px 10px;font-size:11px;color:var(--text-faint);letter-spacing:1px;text-transform:uppercase;font-weight:600}
 .alist{padding:0 18px;display:flex;flex-direction:column;gap:10px}
-.acard{background:#111;border:1px solid #1e1e22;border-radius:20px;padding:16px;display:flex;align-items:center;gap:14px}
-.acard.on{background:#121008;border-color:#2e2618}
-.ainfo{flex:1}
+.empty-state{padding:40px 24px;text-align:center}
+.empty-state svg{width:48px;height:48px;stroke:var(--text-faint);fill:none;stroke-width:1.5;margin-bottom:14px}
+.empty-state p{font-size:13px;color:var(--text-dim);line-height:1.6}
+.acard{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:16px;display:flex;align-items:center;gap:10px;transition:background 0.3s,border 0.3s}
+.acard.on{background:var(--card-on-bg);border-color:var(--card-on-border)}
+.ainfo{flex:1;min-width:0}
 .atime-row{display:flex;align-items:baseline;gap:5px}
 .atime{font-size:28px;font-weight:300;letter-spacing:-1px;line-height:1.1}
-.acard.on .atime{color:#e8d5a3}
-.acard:not(.on) .atime{color:#2e2e2e}
+.acard.on .atime{color:var(--gold-bright)}
+.acard:not(.on) .atime{color:var(--text-vfaint)}
 .aperiod{font-size:13px;font-weight:500}
-.acard.on .aperiod{color:#886a30}
-.acard:not(.on) .aperiod{color:#252525}
+.acard.on .aperiod{color:var(--gold-dim)}
+.acard:not(.on) .aperiod{color:var(--text-faint)}
 .albl{font-size:13px;margin-top:3px}
-.acard.on .albl{color:#7a5e28}
-.acard:not(.on) .albl{color:#333}
+.acard.on .albl{color:var(--gold-dim)}
+.acard:not(.on) .albl{color:var(--text-faint)}
 .atags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
-.tag.dim{border:1px solid #1e1e22;color:#333;background:#141414}
-.tag.gold{border:1px solid #2e2618;color:#7a5e28;background:#13110e}
-.tag.cam{border:1px solid #2e2618;color:#c9a96e;background:#1a1508}
+.tag.dim{border:1px solid var(--card-border);color:var(--text-faint);background:var(--input-bg)}
+.tag.gold{border:1px solid var(--card-on-border);color:var(--gold-dim);background:var(--card-on-bg)}
+.tag.cam{border:1px solid var(--card-on-border);color:var(--gold);background:var(--icon-bg)}
+.acard-actions{display:flex;flex-direction:column;align-items:center;gap:10px}
 .tog{width:46px;height:28px;border-radius:14px;border:none;cursor:pointer;position:relative;flex-shrink:0;transition:background 0.25s}
-.tog.on{background:#c9a96e}
-.tog.off{background:#1e1e22}
-.tog::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#0e0e10;top:3px;transition:left 0.25s}
+.tog.on{background:var(--gold)}
+.tog.off{background:var(--input-border)}
+.tog::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:var(--phone-bg);top:3px;transition:left 0.25s}
 .tog.on::after{left:21px}
 .tog.off::after{left:3px}
-.divider{margin:18px 18px 0;height:1px;background:#161616}
+.del-btn{width:26px;height:26px;border-radius:50%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0.5;transition:opacity 0.2s}
+.del-btn:hover{opacity:1}
+.del-btn svg{width:14px;height:14px;stroke:#c25b4a;fill:none;stroke-width:2;stroke-linecap:round}
+.divider{margin:18px 18px 0;height:1px;background:var(--border)}
 .bnav{display:flex;justify-content:space-around;padding:14px 18px 20px}
 .ni{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
 .ni svg{width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.ni.act svg{stroke:#c9a96e}
-.ni:not(.act) svg{stroke:#2e2e2e}
+.ni.act svg{stroke:var(--gold)}
+.ni:not(.act) svg{stroke:var(--text-vfaint)}
 .ni span{font-size:11px;font-weight:500}
-.ni.act span{color:#c9a96e}
-.ni:not(.act) span{color:#2e2e2e}
+.ni.act span{color:var(--gold)}
+.ni:not(.act) span{color:var(--text-vfaint)}
 
 /* ADD ALARM MODAL */
 .add-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);border-radius:40px;align-items:flex-end;justify-content:center;z-index:30}
 .add-modal.show{display:flex}
-.add-sheet{background:#111;border-radius:24px 24px 0 0;border:1px solid #2a2a2a;padding:24px 20px 30px;width:100%}
-.add-sheet h3{font-size:17px;font-weight:600;color:#f0ede8;margin-bottom:20px;text-align:center}
+.add-sheet{background:var(--phone-bg);border-radius:24px 24px 0 0;border:1px solid var(--input-border);padding:24px 20px 30px;width:100%;max-height:85vh;overflow-y:auto}
+.add-sheet h3{font-size:17px;font-weight:600;color:var(--text-main);margin-bottom:20px;text-align:center}
 .form-row{margin-bottom:14px}
-.form-label{font-size:12px;color:#7a5e28;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px}
-.form-input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:11px 14px;color:#f0ede8;font-size:15px;outline:none}
+.form-label{font-size:12px;color:var(--gold-dim);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px}
+.form-input{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:11px 14px;color:var(--text-main);font-size:15px;outline:none}
 .form-input:focus{border-color:#c9a96e40}
 .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.sound-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.sound-btn{padding:10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;color:#888;font-size:12px;cursor:pointer;text-align:center;transition:all 0.2s}
-.sound-btn.selected{background:#1a1508;border-color:#c9a96e;color:#c9a96e}
-.sound-btn:hover{background:#222}
-.pushup-row{display:flex;align-items:center;gap:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:10px 14px}
-.pushup-row span{font-size:13px;color:#888;flex:1}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.opt-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.opt-btn{padding:10px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;color:var(--text-dim);font-size:12px;cursor:pointer;text-align:center;transition:all 0.2s}
+.opt-btn.selected{background:var(--icon-bg);border-color:var(--gold);color:var(--gold)}
+.pushup-row{display:flex;align-items:center;gap:12px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:10px 14px}
+.pushup-row span{font-size:13px;color:var(--text-dim);flex:1}
 .pushup-stepper{display:flex;align-items:center;gap:10px}
-.step-btn{width:28px;height:28px;border-radius:50%;background:#2a2a2a;border:none;color:#c9a96e;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-.step-val{font-size:16px;font-weight:600;color:#e8d5a3;min-width:28px;text-align:center}
+.step-btn{width:28px;height:28px;border-radius:50%;background:var(--input-border);border:none;color:var(--gold);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.step-val{font-size:16px;font-weight:600;color:var(--gold-bright);min-width:28px;text-align:center}
+.file-btn{width:100%;padding:11px;background:var(--input-bg);border:1px dashed var(--input-border);border-radius:12px;color:var(--text-dim);font-size:13px;cursor:pointer;text-align:center}
+.file-btn.has-file{border-style:solid;border-color:var(--gold);color:var(--gold)}
 .add-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
-.btn-cancel{padding:13px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;color:#666;font-size:14px;cursor:pointer}
-.btn-save{padding:13px;background:#c9a96e;border:none;border-radius:14px;color:#0e0e10;font-size:14px;font-weight:600;cursor:pointer}
+.btn-cancel{padding:13px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:14px;color:var(--text-dim);font-size:14px;cursor:pointer}
+.btn-save{padding:13px;background:var(--gold);border:none;border-radius:14px;color:#0e0e10;font-size:14px;font-weight:600;cursor:pointer}
+
+/* CONFIRM DELETE MODAL */
+.confirm-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);border-radius:40px;align-items:center;justify-content:center;z-index:40;padding:30px}
+.confirm-modal.show{display:flex}
+.confirm-box{background:var(--phone-bg);border:1px solid var(--input-border);border-radius:20px;padding:24px 20px;width:100%;text-align:center}
+.confirm-box p{font-size:14px;color:var(--text-main);margin-bottom:18px;line-height:1.5}
+.confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-confirm-del{padding:12px;background:#c25b4a;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
 
 /* PUSHUP MODAL */
-.modal-wrap{display:none;position:absolute;inset:0;background:#0a0a0a;border-radius:40px;flex-direction:column;z-index:20;overflow:hidden}
+.modal-wrap{display:none;position:absolute;inset:0;background:var(--bg);border-radius:40px;flex-direction:column;z-index:20;overflow:hidden}
 .modal-wrap.show{display:flex}
 .modal-top{padding:20px 20px 12px;text-align:center;flex-shrink:0}
-.modal-ring-label{font-size:11px;color:#c9a96e;letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:6px}
-.modal-alarm-time{font-size:36px;font-weight:300;color:#f0ede8;letter-spacing:-2px}
-.modal-alarm-name{font-size:13px;color:#7a5e28;margin-top:4px}
-.cam-box{position:relative;margin:0 16px;border-radius:20px;overflow:hidden;background:#0a0a0a;border:1px solid #1e1e22;flex-shrink:0}
+.modal-ring-label{font-size:11px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.modal-alarm-time{font-size:36px;font-weight:300;color:var(--text-main);letter-spacing:-2px}
+.modal-alarm-name{font-size:13px;color:var(--gold-dim);margin-top:4px}
+.cam-box{position:relative;margin:0 16px;border-radius:20px;overflow:hidden;background:#0a0a0a;border:1px solid var(--border);flex-shrink:0}
 #cam-vid{width:100%;display:block;transform:scaleX(-1)}
 .cam-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:14px}
-.cam-status{background:rgba(0,0,0,0.65);border-radius:10px;padding:6px 12px;font-size:12px;color:#c9a96e;text-align:center;font-weight:500}
+.cam-status{background:rgba(0,0,0,0.65);border-radius:10px;padding:6px 12px;font-size:12px;color:#e8d5a3;text-align:center;font-weight:500}
 .pushup-counter-wrap{display:flex;justify-content:center}
 .pushup-counter{width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,0.75);border:2px solid #c9a96e;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .pushup-num{font-size:26px;font-weight:500;color:#e8d5a3;line-height:1}
-.pushup-lbl{font-size:10px;color:#886a30;margin-top:2px}
+.pushup-lbl{font-size:10px;color:#cbb37e;margin-top:2px}
 .modal-bottom{padding:14px 18px 18px;flex-shrink:0}
 .progress-wrap{margin-bottom:14px}
-.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#555;margin-bottom:8px}
-.progress-label span:last-child{color:#c9a96e;font-weight:500}
-.progress-bar-bg{height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden}
-.progress-bar-fill{height:100%;background:#c9a96e;border-radius:3px;transition:width 0.4s ease;width:0%}
-.hint-text{font-size:12px;color:#444;text-align:center;margin-bottom:12px;line-height:1.5}
-.snooze-btn{width:100%;padding:13px;background:#141414;border:1px solid #222;border-radius:14px;color:#555;font-size:14px;cursor:pointer}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:8px}
+.progress-label span:last-child{color:var(--gold);font-weight:500}
+.progress-bar-bg{height:6px;background:var(--input-bg);border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--gold);border-radius:3px;transition:width 0.4s ease;width:0%}
+.hint-text{font-size:12px;color:var(--text-faint);text-align:center;margin-bottom:12px;line-height:1.5}
+.snooze-row{display:flex;gap:8px}
+.snooze-btn{flex:1;padding:13px;background:var(--card-bg);border:1px solid var(--border);border-radius:14px;color:var(--text-dim);font-size:14px;cursor:pointer}
 .done-overlay{display:none;position:absolute;inset:0;background:rgba(10,10,10,0.95);border-radius:40px;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:30}
 .done-overlay.show{display:flex}
 .done-icon{width:80px;height:80px;border-radius:50%;background:#1a1508;border:2px solid #c9a96e;display:flex;align-items:center;justify-content:center}
 .done-icon svg{width:36px;height:36px;stroke:#c9a96e;fill:none;stroke-width:2;stroke-linecap:round}
 .done-title{font-size:22px;font-weight:500;color:#e8d5a3}
-.done-sub{font-size:14px;color:#7a5e28;text-align:center;padding:0 30px}
+.done-sub{font-size:14px;color:#cbb37e;text-align:center;padding:0 30px}
 .done-dismiss{padding:14px 48px;background:#c9a96e;border:none;border-radius:14px;color:#0e0e10;font-size:15px;font-weight:600;cursor:pointer}
 </style>
 </head>
@@ -122,14 +155,19 @@ body{background:#080808;display:flex;justify-content:center;min-height:100vh;fon
   <div class="sb">
     <span id="sb-t">9:41 AM</span>
     <div style="display:flex;gap:6px;align-items:center">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3"/></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--sb-color)" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--sb-color)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3"/></svg>
     </div>
   </div>
   <div class="hdr">
     <div class="hdr-title">Alarms</div>
-    <div class="hdr-add" onclick="openAddModal()">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <div class="hdr-btns">
+      <div class="hdr-icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+        <svg id="theme-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+      </div>
+      <div class="hdr-icon-btn" onclick="openAddModal()" title="Add alarm">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
     </div>
   </div>
   <div class="clock-wrap">
@@ -186,8 +224,18 @@ body{background:#080808;display:flex;justify-content:center;min-height:100vh;fon
           <input class="form-input" type="text" id="f-label" placeholder="e.g. Wake up" maxlength="20"/>
         </div>
       </div>
+
       <div class="form-row">
-        <div class="form-label">💪 Pushup goal</div>
+        <div class="form-label">🏋️ Exercise type</div>
+        <div class="opt-grid cols-3" id="exercise-grid">
+          <div class="opt-btn selected" data-ex="pushup" onclick="selectExercise(this)">💪 Pushup</div>
+          <div class="opt-btn" data-ex="squat" onclick="selectExercise(this)">🦵 Squat</div>
+          <div class="opt-btn" data-ex="jumpingjack" onclick="selectExercise(this)">🤸 Jump Jack</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label" id="goal-label">💪 Pushup goal</div>
         <div class="pushup-row">
           <span>Complete before dismissing</span>
           <div class="pushup-stepper">
@@ -197,18 +245,42 @@ body{background:#080808;display:flex;justify-content:center;min-height:100vh;fon
           </div>
         </div>
       </div>
+
       <div class="form-row">
-        <div class="form-label">🔔 Alarm sound</div>
-        <div class="sound-grid" id="sound-grid">
-          <div class="sound-btn selected" data-sound="beep" onclick="selectSound(this)">📟 Classic Beep</div>
-          <div class="sound-btn" data-sound="digital" onclick="selectSound(this)">🔢 Digital</div>
-          <div class="sound-btn" data-sound="gentle" onclick="selectSound(this)">🎵 Gentle Rise</div>
-          <div class="sound-btn" data-sound="urgent" onclick="selectSound(this)">🚨 Urgent</div>
+        <div class="form-label">😴 Snooze duration</div>
+        <div class="opt-grid cols-3" id="snooze-grid">
+          <div class="opt-btn" data-sn="5" onclick="selectSnooze(this)">5 min</div>
+          <div class="opt-btn selected" data-sn="10" onclick="selectSnooze(this)">10 min</div>
+          <div class="opt-btn" data-sn="15" onclick="selectSnooze(this)">15 min</div>
         </div>
       </div>
+
+      <div class="form-row">
+        <div class="form-label">🔔 Alarm sound</div>
+        <div class="opt-grid" id="sound-grid">
+          <div class="opt-btn selected" data-sound="beep" onclick="selectSound(this)">📟 Classic Beep</div>
+          <div class="opt-btn" data-sound="digital" onclick="selectSound(this)">🔢 Digital</div>
+          <div class="opt-btn" data-sound="gentle" onclick="selectSound(this)">🎵 Gentle Rise</div>
+          <div class="opt-btn" data-sound="urgent" onclick="selectSound(this)">🚨 Urgent</div>
+        </div>
+        <input type="file" id="f-sound-file" accept="audio/*" style="display:none" onchange="onSoundFileChosen(event)"/>
+        <div class="file-btn" id="sound-file-btn" onclick="document.getElementById('f-sound-file').click()">🎶 Or upload your own song / sound</div>
+      </div>
+
       <div class="add-actions">
         <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
         <button class="btn-save" onclick="saveAlarm()">Save Alarm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE -->
+  <div class="confirm-modal" id="confirm-modal">
+    <div class="confirm-box">
+      <p>Delete this alarm? This can't be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+        <button class="btn-confirm-del" onclick="confirmDelete()">Delete</button>
       </div>
     </div>
   </div>
@@ -235,13 +307,13 @@ body{background:#080808;display:flex;justify-content:center;min-height:100vh;fon
     <div class="modal-bottom">
       <div class="progress-wrap">
         <div class="progress-label">
-          <span>Pushup progress</span>
+          <span id="p-ex-label">Pushup progress</span>
           <span id="p-pct">0 / 20</span>
         </div>
         <div class="progress-bar-bg"><div class="progress-bar-fill" id="p-bar"></div></div>
       </div>
       <div class="hint-text" id="p-hint">Get into pushup position.<br>Go DOWN to start counting.</div>
-      <button class="snooze-btn" onclick="snoozeAlarm()">Snooze 5 min</button>
+      <div class="snooze-row" id="snooze-row"></div>
     </div>
     <div class="done-overlay" id="done-overlay">
       <div class="done-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -255,13 +327,67 @@ body{background:#080808;display:flex;justify-content:center;min-height:100vh;fon
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js"></script>
 <script>
-// ── State ──────────────────────────────────────────────
-const alarms=[
-  {id:1,h:6,m:30,label:'Morning routine',repeat:'Daily',pushGoal:20,sound:'beep',on:true},
-  {id:2,h:8,m:0,label:'Work standup',repeat:'Mon–Fri',pushGoal:10,sound:'gentle',on:true},
-  {id:3,h:22,m:30,label:'Sleep reminder',repeat:'Daily',pushGoal:15,sound:'digital',on:false},
+// ── Constants ──────────────────────────────────────────
+const DOWN_ANGLE_THRESHOLD=80, UP_ANGLE_THRESHOLD=150;
+const SQUAT_DOWN_THRESHOLD=100, SQUAT_UP_THRESHOLD=160;
+const EXERCISE_META={
+  pushup:{emoji:'💪',label:'Pushup',downHint:'Get into pushup position.<br>Go DOWN to start counting.'},
+  squat:{emoji:'🦵',label:'Squat',downHint:'Stand facing the camera.<br>Squat DOWN to start counting.'},
+  jumpingjack:{emoji:'🤸',label:'Jumping Jack',downHint:'Stand facing the camera.<br>Tap counter for each jump (manual count).'}
+};
+
+// ── Default data ───────────────────────────────────────
+const defaultAlarms=[
+  {id:1,h:6,m:30,label:'Morning routine',repeat:'Daily',pushGoal:20,sound:'beep',customSound:null,snooze:10,exercise:'pushup',on:true},
+  {id:2,h:8,m:0,label:'Work standup',repeat:'Mon–Fri',pushGoal:10,sound:'gentle',customSound:null,snooze:10,exercise:'squat',on:true},
+  {id:3,h:22,m:30,label:'Sleep reminder',repeat:'Daily',pushGoal:15,sound:'digital',customSound:null,snooze:5,exercise:'pushup',on:false},
 ];
-let nextId=4,ringId=null,pushCount=0,pushGoal=20,poseState='up',stream=null,poseReady=false,mpCamera=null,audioCtx=null,alarmInterval=null,selectedSound='beep',newPushGoal=20;
+
+// ── State ──────────────────────────────────────────────
+let alarms=loadAlarms();
+let nextId=loadNextId();
+let ringId=null,pushCount=0,pushGoal=20,curExercise='pushup',poseState='up',stream=null,poseReady=false,mpCamera=null,audioCtx=null,alarmInterval=null,customAudioEl=null;
+let selectedSound='beep',newPushGoal=20,newCustomSound=null,newSnooze=10,newExercise='pushup';
+let deleteTargetId=null;
+
+// ── Persistence ────────────────────────────────────────
+function loadAlarms(){
+  try{
+    const saved=localStorage.getItem('smartAlarms');
+    if(saved)return JSON.parse(saved);
+  }catch(e){}
+  return JSON.parse(JSON.stringify(defaultAlarms));
+}
+function saveAlarms(){
+  try{localStorage.setItem('smartAlarms',JSON.stringify(alarms));}catch(e){console.warn('Could not save alarms',e);}
+}
+function loadNextId(){
+  const maxId=alarms.reduce((m,a)=>Math.max(m,a.id),0);
+  return maxId+1;
+}
+function loadTheme(){
+  try{return localStorage.getItem('smartAlarmTheme')||'dark';}catch(e){return 'dark';}
+}
+function saveTheme(t){
+  try{localStorage.setItem('smartAlarmTheme',t);}catch(e){}
+}
+
+// ── Theme ──────────────────────────────────────────────
+function applyTheme(t){
+  if(t==='light'){document.body.classList.add('light');}
+  else{document.body.classList.remove('light');}
+  const icon=document.getElementById('theme-icon');
+  if(t==='light'){
+    icon.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }else{
+    icon.innerHTML='<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>';
+  }
+}
+function toggleTheme(){
+  const cur=document.body.classList.contains('light')?'light':'dark';
+  const next=cur==='light'?'dark':'light';
+  applyTheme(next);saveTheme(next);
+}
 
 // ── Audio ──────────────────────────────────────────────
 function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
@@ -313,11 +439,20 @@ function playSound(type){
   (sounds[type]||sounds.beep)();
 }
 
-function startAlarmSound(type){
-  playSound(type);
-  alarmInterval=setInterval(()=>playSound(type),1200);
+function startAlarmSound(a){
+  if(a.customSound){
+    customAudioEl=new Audio(a.customSound);
+    customAudioEl.loop=true;
+    customAudioEl.play().catch(()=>{ /* autoplay might be blocked; user already interacted via UI so usually fine */ });
+  }else{
+    playSound(a.sound);
+    alarmInterval=setInterval(()=>playSound(a.sound),1200);
+  }
 }
-function stopAlarmSound(){clearInterval(alarmInterval);alarmInterval=null;}
+function stopAlarmSound(){
+  clearInterval(alarmInterval);alarmInterval=null;
+  if(customAudioEl){customAudioEl.pause();customAudioEl=null;}
+}
 
 // ── Format ─────────────────────────────────────────────
 function fmt(h,m){const ap=h>=12?'PM':'AM';const hh=h%12||12;return hh+':'+String(m).padStart(2,'0')+' '+ap;}
@@ -325,27 +460,51 @@ function fmt(h,m){const ap=h>=12?'PM':'AM';const hh=h%12||12;return hh+':'+Strin
 // ── Render ─────────────────────────────────────────────
 function renderAlarms(){
   const el=document.getElementById('alist');el.innerHTML='';
+  if(alarms.length===0){
+    el.innerHTML=`<div class="empty-state">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6M22 6l-3-3"/></svg>
+      <p>No alarms yet.<br>Tap the + button to add one.</p>
+    </div>`;
+    updateNext();return;
+  }
   alarms.forEach(a=>{
     const d=document.createElement('div');
     d.className='acard'+(a.on?' on':'');
     const h12=a.h%12||12,ap=a.h>=12?'PM':'AM';
-    const soundEmoji={beep:'📟',digital:'🔢',gentle:'🎵',urgent:'🚨'}[a.sound]||'🔔';
+    const soundEmoji=a.customSound?'🎶':({beep:'📟',digital:'🔢',gentle:'🎵',urgent:'🚨'}[a.sound]||'🔔');
+    const exMeta=EXERCISE_META[a.exercise]||EXERCISE_META.pushup;
     d.innerHTML=`<div class="ainfo">
       <div class="atime-row"><div class="atime">${h12}:${String(a.m).padStart(2,'0')}</div><div class="aperiod">${ap}</div></div>
       <div class="albl">${a.label}</div>
       <div class="atags">
         <span class="tag ${a.on?'gold':'dim'}">${a.repeat}</span>
-        <span class="tag ${a.on?'cam':'dim'}">💪 ${a.pushGoal} pushups</span>
-        <span class="tag ${a.on?'gold':'dim'}">${soundEmoji} ${a.sound}</span>
+        <span class="tag ${a.on?'cam':'dim'}">${exMeta.emoji} ${a.pushGoal} ${exMeta.label.toLowerCase()}${a.pushGoal>1?'s':''}</span>
+        <span class="tag ${a.on?'gold':'dim'}">${soundEmoji} ${a.customSound?'custom':a.sound}</span>
+        <span class="tag ${a.on?'gold':'dim'}">😴 ${a.snooze}m</span>
       </div>
     </div>
-    <button class="tog ${a.on?'on':'off'}" onclick="toggleAlarm(${a.id},event)"></button>`;
+    <div class="acard-actions">
+      <button class="tog ${a.on?'on':'off'}" onclick="toggleAlarm(${a.id},event)"></button>
+      <button class="del-btn" onclick="openConfirmModal(${a.id},event)" title="Delete">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>
+    </div>`;
     el.appendChild(d);
   });
   updateNext();
 }
 
-function toggleAlarm(id,e){e.stopPropagation();const a=alarms.find(x=>x.id===id);a.on=!a.on;renderAlarms();}
+function toggleAlarm(id,e){e.stopPropagation();const a=alarms.find(x=>x.id===id);a.on=!a.on;saveAlarms();renderAlarms();}
+
+function openConfirmModal(id,e){e.stopPropagation();deleteTargetId=id;document.getElementById('confirm-modal').classList.add('show');}
+function closeConfirmModal(){deleteTargetId=null;document.getElementById('confirm-modal').classList.remove('show');}
+function confirmDelete(){
+  if(deleteTargetId!==null){
+    alarms=alarms.filter(a=>a.id!==deleteTargetId);
+    saveAlarms();renderAlarms();
+  }
+  closeConfirmModal();
+}
 
 function updateNext(){
   const now=new Date();let best=null,bestMin=Infinity;
@@ -381,29 +540,43 @@ function tick(){
 
 // ── Alarm ring ─────────────────────────────────────────
 function ringAlarm(a){
-  ringId=a.id;pushCount=0;pushGoal=a.pushGoal;poseState='up';
+  ringId=a.id;pushCount=0;pushGoal=a.pushGoal;poseState='up';curExercise=a.exercise||'pushup';
+  const exMeta=EXERCISE_META[curExercise]||EXERCISE_META.pushup;
   document.getElementById('m-time').textContent=fmt(a.h,a.m);
   document.getElementById('m-name').textContent=a.label;
   document.getElementById('p-count').textContent='0';
   document.getElementById('p-goal-lbl').textContent='/ '+pushGoal;
   document.getElementById('p-bar').style.width='0%';
   document.getElementById('p-pct').textContent='0 / '+pushGoal;
-  document.getElementById('p-hint').textContent='Get into pushup position.\nGo DOWN to start counting.';
+  document.getElementById('p-ex-label').textContent=exMeta.label+' progress';
+  document.getElementById('p-hint').innerHTML=exMeta.downHint;
   document.getElementById('done-overlay').classList.remove('show');
+
+  // Build snooze buttons (allow quick re-snooze options around alarm's configured value)
+  const snoozeRow=document.getElementById('snooze-row');
+  const opts=[5,a.snooze,15].filter((v,i,arr)=>arr.indexOf(v)===i).sort((x,y)=>x-y);
+  snoozeRow.innerHTML=opts.map(v=>`<button class="snooze-btn" onclick="snoozeAlarm(${v})">Snooze ${v}m</button>`).join('');
+
   document.getElementById('modal').classList.add('show');
-  startAlarmSound(a.sound);
+  startAlarmSound(a);
   startPoseDetection();
 }
 
 // ── Pose detection ─────────────────────────────────────
 function startPoseDetection(){
+  if(curExercise==='jumpingjack'){
+    document.getElementById('cam-status').textContent='Manual count mode';
+    enableManualCount();
+    return;
+  }
   navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:360,height:240}})
     .then(s=>{stream=s;const v=document.getElementById('cam-vid');v.srcObject=s;initPose(v);})
     .catch(()=>{document.getElementById('cam-status').textContent='Camera unavailable — tap counter';enableManualCount();});
 }
 
 function enableManualCount(){
-  document.getElementById('p-hint').innerHTML='Camera not available.<br>Tap the counter to count manually.';
+  const exMeta=EXERCISE_META[curExercise]||EXERCISE_META.pushup;
+  document.getElementById('p-hint').innerHTML=`Camera AI not available for this exercise.<br>Tap the counter for each ${exMeta.label.toLowerCase()}.`;
   const ctr=document.getElementById('manual-counter');
   ctr.onclick=()=>countPushup();ctr.style.cursor='pointer';
 }
@@ -415,7 +588,7 @@ function initPose(vid){
     pose.onResults(onPoseResults);poseReady=true;
     mpCamera=new Camera(vid,{onFrame:async()=>{if(poseReady)await pose.send({image:vid});},width:360,height:240});
     mpCamera.start();
-    document.getElementById('cam-status').textContent='AI detecting pushups...';
+    document.getElementById('cam-status').textContent='AI detecting...';
   }catch(e){document.getElementById('cam-status').textContent='Pose AI unavailable — tap counter';enableManualCount();}
 }
 
@@ -427,10 +600,19 @@ function angle(a,b,c){
 function onPoseResults(res){
   if(!res.poseLandmarks)return;
   const lm=res.poseLandmarks;
-  const lA=angle(lm[11],lm[13],lm[15]),rA=angle(lm[12],lm[14],lm[16]);
-  const avg=(lA+rA)/2;
-  if(avg<80&&poseState==='up'){poseState='down';document.getElementById('cam-status').textContent='Down ✓ — now push UP!';}
-  else if(avg>150&&poseState==='down'){poseState='up';countPushup();}
+  if(curExercise==='squat'){
+    // hip-knee-ankle angle, both legs
+    const lA=angle(lm[23],lm[25],lm[27]),rA=angle(lm[24],lm[26],lm[28]);
+    const avg=(lA+rA)/2;
+    if(avg<SQUAT_DOWN_THRESHOLD&&poseState==='up'){poseState='down';document.getElementById('cam-status').textContent='Down ✓ — now stand UP!';}
+    else if(avg>SQUAT_UP_THRESHOLD&&poseState==='down'){poseState='up';countPushup();}
+  }else{
+    // pushup: shoulder-elbow-wrist angle
+    const lA=angle(lm[11],lm[13],lm[15]),rA=angle(lm[12],lm[14],lm[16]);
+    const avg=(lA+rA)/2;
+    if(avg<DOWN_ANGLE_THRESHOLD&&poseState==='up'){poseState='down';document.getElementById('cam-status').textContent='Down ✓ — now push UP!';}
+    else if(avg>UP_ANGLE_THRESHOLD&&poseState==='down'){poseState='up';countPushup();}
+  }
 }
 
 function countPushup(){
@@ -439,14 +621,26 @@ function countPushup(){
   const pct=Math.round((pushCount/pushGoal)*100);
   document.getElementById('p-bar').style.width=pct+'%';
   document.getElementById('p-pct').textContent=pushCount+' / '+pushGoal;
+  const exMeta=EXERCISE_META[curExercise]||EXERCISE_META.pushup;
   document.getElementById('cam-status').textContent=pushCount+' / '+pushGoal+' done!';
   playSound('beep');
-  if(pushCount<pushGoal){document.getElementById('p-hint').textContent=(pushGoal-pushCount)+' more to go. Keep pushing!';}
+  if(pushCount<pushGoal){document.getElementById('p-hint').textContent=(pushGoal-pushCount)+' more '+exMeta.label.toLowerCase()+'(s) to go. Keep going!';}
   else{
     stopAlarmSound();stopStream();
-    document.getElementById('done-title').textContent=pushGoal+' Pushups done! 💪';
+    document.getElementById('done-title').textContent=pushGoal+' '+exMeta.label+'s done! '+exMeta.emoji;
+    recordHistory(exMeta.label,pushGoal);
     setTimeout(()=>document.getElementById('done-overlay').classList.add('show'),400);
   }
+}
+
+function recordHistory(exLabel,count){
+  try{
+    const key='smartAlarmHistory';
+    const today=new Date().toISOString().slice(0,10);
+    const hist=JSON.parse(localStorage.getItem(key)||'[]');
+    hist.push({date:today,exercise:exLabel,count:count,ts:Date.now()});
+    localStorage.setItem(key,JSON.stringify(hist));
+  }catch(e){}
 }
 
 function stopStream(){
@@ -456,20 +650,26 @@ function stopStream(){
 }
 
 function dismissAlarm(){stopStream();stopAlarmSound();document.getElementById('modal').classList.remove('show');document.getElementById('done-overlay').classList.remove('show');ringId=null;}
-function snoozeAlarm(){
+function snoozeAlarm(minutes){
   stopStream();stopAlarmSound();
   const a=alarms.find(x=>x.id===ringId);
-  if(a){const d=new Date();d.setMinutes(d.getMinutes()+5);a.h=d.getHours();a.m=d.getMinutes();}
-  document.getElementById('modal').classList.remove('show');ringId=null;updateNext();
+  if(a){const d=new Date();d.setMinutes(d.getMinutes()+(minutes||a.snooze||5));a.h=d.getHours();a.m=d.getMinutes();saveAlarms();}
+  document.getElementById('modal').classList.remove('show');ringId=null;renderAlarms();
 }
 
 // ── Add alarm modal ────────────────────────────────────
 function openAddModal(){
-  newPushGoal=20;selectedSound='beep';
+  newPushGoal=20;selectedSound='beep';newCustomSound=null;newSnooze=10;newExercise='pushup';
   document.getElementById('f-pushup').textContent='20';
   document.getElementById('f-time').value='07:00';
   document.getElementById('f-label').value='';
-  document.querySelectorAll('.sound-btn').forEach(b=>{b.classList.remove('selected');if(b.dataset.sound==='beep')b.classList.add('selected');});
+  document.getElementById('f-sound-file').value='';
+  document.getElementById('sound-file-btn').textContent='🎶 Or upload your own song / sound';
+  document.getElementById('sound-file-btn').classList.remove('has-file');
+  document.getElementById('goal-label').textContent='💪 Pushup goal';
+  document.querySelectorAll('#sound-grid .opt-btn').forEach(b=>{b.classList.remove('selected');if(b.dataset.sound==='beep')b.classList.add('selected');});
+  document.querySelectorAll('#snooze-grid .opt-btn').forEach(b=>{b.classList.remove('selected');if(b.dataset.sn==='10')b.classList.add('selected');});
+  document.querySelectorAll('#exercise-grid .opt-btn').forEach(b=>{b.classList.remove('selected');if(b.dataset.ex==='pushup')b.classList.add('selected');});
   document.getElementById('add-modal').classList.add('show');
 }
 function closeAddModal(){document.getElementById('add-modal').classList.remove('show');}
@@ -480,9 +680,42 @@ function stepPushup(n){
 }
 
 function selectSound(el){
-  document.querySelectorAll('.sound-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('#sound-grid .opt-btn').forEach(b=>b.classList.remove('selected'));
   el.classList.add('selected');selectedSound=el.dataset.sound;
+  newCustomSound=null;
+  document.getElementById('f-sound-file').value='';
+  document.getElementById('sound-file-btn').textContent='🎶 Or upload your own song / sound';
+  document.getElementById('sound-file-btn').classList.remove('has-file');
   playSound(selectedSound);
+}
+
+function selectSnooze(el){
+  document.querySelectorAll('#snooze-grid .opt-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');newSnooze=parseInt(el.dataset.sn);
+}
+
+function selectExercise(el){
+  document.querySelectorAll('#exercise-grid .opt-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');newExercise=el.dataset.ex;
+  const meta=EXERCISE_META[newExercise];
+  document.getElementById('goal-label').textContent=meta.emoji+' '+meta.label+' goal';
+}
+
+function onSoundFileChosen(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  if(file.size>4*1024*1024){
+    alert('File too large. Please choose an audio file under 4MB.');
+    event.target.value='';return;
+  }
+  const reader=new FileReader();
+  reader.onload=function(e){
+    newCustomSound=e.target.result;
+    document.getElementById('sound-file-btn').textContent='✓ '+file.name;
+    document.getElementById('sound-file-btn').classList.add('has-file');
+    document.querySelectorAll('#sound-grid .opt-btn').forEach(b=>b.classList.remove('selected'));
+  };
+  reader.readAsDataURL(file);
 }
 
 function saveAlarm(){
@@ -490,10 +723,17 @@ function saveAlarm(){
   if(!t){alert('Please set a time.');return;}
   const[hh,mm]=t.split(':');
   const lbl=document.getElementById('f-label').value||'My alarm';
-  alarms.push({id:nextId++,h:parseInt(hh),m:parseInt(mm),label:lbl,repeat:'Daily',pushGoal:newPushGoal,sound:selectedSound,on:true});
+  alarms.push({
+    id:nextId++,h:parseInt(hh),m:parseInt(mm),label:lbl,repeat:'Daily',
+    pushGoal:newPushGoal,sound:selectedSound,customSound:newCustomSound,
+    snooze:newSnooze,exercise:newExercise,on:true
+  });
+  saveAlarms();
   renderAlarms();closeAddModal();
 }
 
+// ── Init ───────────────────────────────────────────────
+applyTheme(loadTheme());
 renderAlarms();tick();setInterval(tick,1000);
 </script>
 </body>
